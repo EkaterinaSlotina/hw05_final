@@ -200,7 +200,7 @@ class PostPagesTests(TestCase):
         Post.objects.create(
             text='Новый пост',
             author=self.user,
-            )
+        )
 
         response_2 = self.authorized_client.get(reverse('index'))
         self.assertEqual(response_1.content, response_2.content)
@@ -220,26 +220,36 @@ class PostPagesTests(TestCase):
         followers_count = response.context['followers_count']
 
         self.authorized_client_follower.get(
-            reverse('profile_follow', kwargs={'username': self.post.author.username}))
+            reverse('profile_follow', kwargs={
+                'username': self.post.author.username
+            }))
 
         response_2 = self.authorized_client_follower.get(
-            reverse('profile', kwargs={'username': self.post.author.username})
-        )
+            reverse('profile', kwargs={
+                'username': self.post.author.username
+            }))
 
         self.assertEqual(response_2.context['followers_count'], followers_count + 1)
 
         self.authorized_client_follower.get(
-            reverse('profile_unfollow', kwargs={'username': self.post.author.username}))
+            reverse('profile_unfollow', kwargs={
+                'username': self.post.author.username
+            }))
 
         response_3 = self.authorized_client_follower.get(
             reverse('profile', kwargs={'username': self.post.author.username})
         )
-        self.assertEqual(response_3.context['followers_count'], response_2.context['followers_count'] - 1)
+        self.assertEqual(
+            response_3.context['followers_count'],
+            response_2.context['followers_count'] - 1
+        )
 
     def test_new_sign(self):
         """Новая запись появляется у подписчиков. """
         self.authorized_client_follower.get(
-            reverse('profile_follow', kwargs={'username': self.post.author.username}))
+            reverse('profile_follow', kwargs={
+                'username': self.post.author.username
+            }))
 
         response = self.authorized_client_follower.get(
             reverse('follow_index'))
@@ -253,5 +263,3 @@ class PostPagesTests(TestCase):
             reverse('follow_index'))
 
         self.assertNotEqual(response_2.context, response.context)
-
-

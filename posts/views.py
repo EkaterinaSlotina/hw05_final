@@ -48,9 +48,11 @@ def profile(request, username):
     page = paginator.get_page(page_number)
     count = author_posts.count()
     followers_count = author.following.all().count()
-    following = request.user.is_authenticated and Follow.objects.filter(user=request.user, author=author).exists()
+    following = request.user.is_authenticated and Follow.objects.filter(
+        user=request.user, author=author).exists()
     return render(request, 'profile.html', {
-        'page': page, 'author': author, 'count': count, 'following': following, "followers_count": followers_count
+        'page': page, 'author': author, 'count': count,
+        'following': following, "followers_count": followers_count
     })
 
 
@@ -60,7 +62,8 @@ def post_view(request, username, post_id):
     form = CommentForm()
     comments = post.comments.all()
     return render(request, 'post.html', {
-        'post': post, 'author': post.author, 'count': count, 'form': form, 'comments': comments
+        'post': post, 'author': post.author, 'count': count,
+        'form': form, 'comments': comments
     })
 
 
@@ -69,7 +72,9 @@ def post_edit(request, username, post_id):
     post = get_object_or_404(Post, author__username=username, id=post_id)
     if post.author != request.user:
         return redirect('post', username=username, post_id=post_id)
-    form = PostForm(request.POST or None, files=request.FILES or None, instance=post)
+    form = PostForm(
+        request.POST or None, files=request.FILES or None, instance=post
+    )
     if form.is_valid():
         post.save()
         return redirect('post', username=username, post_id=post_id)
@@ -102,7 +107,9 @@ def add_comment(request, username, post_id):
         comment.author = request.user
         comment.save()
         return redirect('post', username=username, post_id=post_id)
-    return render(request, 'includes/comments.html', {'form': form, 'post': post})
+    return render(request, 'includes/comments.html', {
+        'form': form, 'post': post
+    })
 
 
 @login_required
