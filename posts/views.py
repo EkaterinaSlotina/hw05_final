@@ -12,7 +12,7 @@ def index(request):
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
     return render(request, 'index.html', {
-        'page': page, 'paginator': paginator
+        'page': page
     })
 
 
@@ -23,7 +23,7 @@ def group_posts(request, slug):
     page_number_groups = request.GET.get('page')
     page = paginator.get_page(page_number_groups)
     return render(request, 'group.html', {
-        'group': group, 'page': page, 'paginator': paginator
+        'group': group, 'page': page
     })
 
 
@@ -120,7 +120,6 @@ def follow_index(request):
     page = paginator.get_page(page_number)
     return render(request, 'follow.html', {
         'page': page,
-        'paginator': paginator,
     })
 
 
