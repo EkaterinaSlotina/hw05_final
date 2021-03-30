@@ -229,7 +229,9 @@ class PostPagesTests(TestCase):
                 'username': self.post.author.username
             }))
 
-        self.assertEqual(response_2.context['followers_count'], followers_count + 1)
+        self.assertEqual(
+            response_2.context['followers_count'], followers_count + 1
+        )
 
         self.authorized_client_follower.get(
             reverse('profile_unfollow', kwargs={
@@ -255,8 +257,8 @@ class PostPagesTests(TestCase):
             reverse('follow_index'))
 
         Post.objects.create(
-           text='Новый пост',
-           author=self.user,
+            text='Новый пост',
+            author=self.user,
         )
 
         response_2 = self.authorized_client_follower.get(
