@@ -40,7 +40,8 @@ class PostFormTests(TestCase):
         cls.post = Post.objects.create(
             text='Тестовый текст',
             author=cls.user,
-            group=cls.group
+            group=cls.group,
+            image=cls.uploaded
         )
         cls.form = PostForm()
 
@@ -115,6 +116,22 @@ class PostFormTests(TestCase):
                 image='posts/small.gif'
             ).exists()
         )
+
+    def test_image_exist_on_pages(self):
+        """Проверяем, что картинка отображается на нужных страницах."""
+        reverses = (
+            reverse('index'),
+            reverse('groups', kwargs={'slug': self.group.slug}),
+            reverse('profile', kwargs={'username': self.post.author.username}),
+            reverse('post', kwargs={
+                'username': self.post.author.username, 'post_id': self.post.id
+            })
+        )
+
+        for each_reverse in reverses:
+            with self.subTest(each_reverse=each_reverse):
+                response = self.authorized_client.get(each_reverse)
+                self.assertContains(response, '<img')
 
     def test_create_comment(self):
         """Только авторизованный клиент может создавать комментарии."""

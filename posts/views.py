@@ -29,7 +29,7 @@ def group_posts(request, slug):
 
 @login_required
 def new_post(request):
-    form = PostForm(request.POST or None)
+    form = PostForm(request.POST or None, files=request.FILES or None)
     if form.is_valid():
         post = form.save(commit=False)
         post.author = request.user
@@ -48,11 +48,13 @@ def profile(request, username):
     page = paginator.get_page(page_number)
     count = author_posts.count()
     followers_count = author.following.all().count()
+    following_count = author.follower.all().count()
     following = request.user.is_authenticated and Follow.objects.filter(
         user=request.user, author=author).exists()
     return render(request, 'profile.html', {
         'page': page, 'author': author, 'count': count,
-        'following': following, "followers_count": followers_count
+        'following': following, "followers_count": followers_count,
+        "following_count": following_count
     })
 
 

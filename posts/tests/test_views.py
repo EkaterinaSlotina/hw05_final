@@ -210,8 +210,8 @@ class PostPagesTests(TestCase):
         response_3 = self.authorized_client.get(reverse('index'))
         self.assertNotEqual(response_1.content, response_3.content)
 
-    def test_authorized_client_follow_unfollow(self):
-        """Подписки и отписки"""
+    def test_authorized_client_follow(self):
+        """Тестирование подписки """
 
         response = self.authorized_client_follower.get(
             reverse('profile', kwargs={'username': self.post.author.username})
@@ -233,6 +233,17 @@ class PostPagesTests(TestCase):
             response_2.context['followers_count'], followers_count + 1
         )
 
+    def test_authorized_client_unfollow(self):
+        """Тестирование отписки """
+        self.authorized_client_follower.get(
+            reverse('profile_follow', kwargs={
+                'username': self.post.author.username
+            }))
+
+        response = self.authorized_client_follower.get(
+            reverse('profile', kwargs={'username': self.post.author.username})
+        )
+
         self.authorized_client_follower.get(
             reverse('profile_unfollow', kwargs={
                 'username': self.post.author.username
@@ -241,12 +252,13 @@ class PostPagesTests(TestCase):
         response_3 = self.authorized_client_follower.get(
             reverse('profile', kwargs={'username': self.post.author.username})
         )
+
         self.assertEqual(
             response_3.context['followers_count'],
-            response_2.context['followers_count'] - 1
+            response.context['followers_count'] - 1
         )
 
-    def test_new_sign(self):
+    def test_new_sign_follower(self):
         """Новая запись появляется у подписчиков. """
         self.authorized_client_follower.get(
             reverse('profile_follow', kwargs={
@@ -264,4 +276,19 @@ class PostPagesTests(TestCase):
         response_2 = self.authorized_client_follower.get(
             reverse('follow_index'))
 
-        self.assertNotEqual(response_2.context, response.context)
+        self.assertNotEqual(response_2.content, response.content)
+
+    def test_new_sign_not_follower(self):
+        """Новая запись не появляется у тех, кто не подписан. """
+        response = self.authorized_client_follower.get(
+            reverse('follow_index'))
+
+        Post.objects.create(
+            text='Новый пост',
+            author=self.user,
+        )
+
+        response_2 = self.authorized_client_follower.get(
+            reverse('follow_index'))
+
+        self.assertEqual(response_2.content, response.content)

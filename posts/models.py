@@ -30,7 +30,8 @@ class Post(models.Model):
         help_text='Введите группу'
     )
     image = models.ImageField(
-        upload_to='posts/', blank=True, null=True
+        upload_to='posts/', blank=True, null=True,
+        verbose_name='Картинка'
     )
 
     class Meta:
@@ -62,3 +63,8 @@ class Follow(models.Model):
         User, on_delete=models.CASCADE,
         related_name='follower'
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'author'], name='unique_follower')
+        ]
